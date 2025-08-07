@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IKImage } from "..";
 import { Link } from "react-router-dom";
 import {
@@ -6,10 +6,20 @@ import {
   UserButton,
   SignedIn,
   SignedOut,
+  useAuth,
 } from "@clerk/clerk-react";
 
 const NaviBar = () => {
   const [isOpen, setIsOpen] = useState(false);
+
+  // this is only for test, it will be deleted later
+  const { getToken } = useAuth();
+  useEffect(() => {
+    getToken().then((token) => {
+      console.log(token);
+    });
+  }, []);
+
   return (
     <div className="w-full h-16 md:h-20 flex justify-between items-center">
       {/* logo */}

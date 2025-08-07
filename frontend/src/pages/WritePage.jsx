@@ -1,9 +1,28 @@
-import { useUser } from "@clerk/clerk-react";
+import { useAuth, useUser } from "@clerk/clerk-react";
 import "react-quill-new/dist/quill.snow.css";
 import ReactQuill from "react-quill-new";
+import { useMutation } from "@tanstack/react-query";
+import axios from "axios";
 
 const WritePage = () => {
   const { isLoaded, isSignedIn } = useUser();
+
+  const { getToken } = useAuth();
+  const mutation = useMutation({
+    mutationFn: async (newPost) => {
+      const token = await getToken();
+      return axios.post(`${import.meta.env.VITE_API_URL}/api/posts`, newPost, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+    },
+    onSuccess: (res) => {
+      console.log("success!", res.data);
+    },
+  });
+  console.log(mutation);
+
   if (!isLoaded) return <div>Loading...</div>;
   if (isLoaded && !isSignedIn)
     return <div>You must be signed in to write a post</div>;
