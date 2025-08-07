@@ -1,4 +1,5 @@
 export { default as IKImage } from "./imagekit/IKImage";
+export { default as IKUpload } from "./imagekit/IKUpload";
 export { default as NaviBar } from "./ui/NaviBar";
 export { default as MainCategories } from "./ui/MainCategories";
 export { default as FeaturePosts } from "./ui/FeaturePosts";

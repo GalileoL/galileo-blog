@@ -16,7 +16,7 @@ const PostListItem = () => {
       </div>
       {/* details */}
       <div className="flex flex-col gap-4 xl:w-2/3">
-        <Link to="/test" className="text-4xl font-semibold">
+        <Link to="/posts/test" className="text-4xl font-semibold">
           Lorem ipsum dolor sit amet consectetur adipisicing elit. Autem
           recusandae
         </Link>
@@ -32,7 +32,7 @@ const PostListItem = () => {
           aspernatur placeat libero pariatur ipsum earum, quisquam eligendi quo
           odit suscipit saepe veniam a? Quidem cum sed molestiae labore neque!
         </p>
-        <Link to="/test" className="text-blue-800 underline text-sm">
+        <Link to="/posts/test" className="text-blue-800 underline text-sm">
           Read more
         </Link>
       </div>

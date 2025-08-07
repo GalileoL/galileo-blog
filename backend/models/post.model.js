@@ -22,6 +22,10 @@ const postSchema = new Schema(
     desc: {
       type: String,
     },
+    category: {
+      type: String,
+      default: "general",
+    },
     content: {
       type: String,
       required: true,
