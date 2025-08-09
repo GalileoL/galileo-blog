@@ -1,8 +1,29 @@
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import IKImage from "../components/imagekit/IKImage";
 import { Comments, PostMenuActions, Search } from "../components";
+import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
+
+const getPostBySlug = async (slug) => {
+  const response = await axios.get(
+    `${import.meta.env.VITE_API_URL}/posts/${slug}`
+  );
+
+  return response.data;
+};
 
 const SinglePostPage = () => {
+  const { slug } = useParams();
+
+  const { isPending, error, data } = useQuery({
+    queryKey: ["post", slug],
+    queryFn: () => getPostBySlug(slug),
+  });
+
+  if (isPending) return <div>Loading...</div>;
+  if (error) return <div>Error: {error.message ?? "Unknown error"}</div>;
+  if (!data) return <div>No post found</div>;
+
   return (
     <div className="flex flex-col gap-8">
       {/* details */}

@@ -3,7 +3,7 @@ import "react-quill-new/dist/quill.snow.css";
 import ReactQuill from "react-quill-new";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { IKUpload } from "../components";
@@ -11,6 +11,24 @@ import { IKUpload } from "../components";
 const WritePage = () => {
   const { isLoaded, isSignedIn } = useUser();
   const [value, setValue] = useState("");
+  const [cover, setCover] = useState("");
+  const [img, setImg] = useState("");
+  const [video, setVideo] = useState("");
+  const [progress, setProgress] = useState(0);
+
+  // insert image and video to react-quill editor
+  useEffect(() => {
+    img &&
+      setValue((prev) => {
+        return prev + `<img src="${img.url}" alt="image" class="w-full" />`;
+      });
+  }, [img]);
+  useEffect(() => {
+    video &&
+      setValue((prev) => {
+        return prev + `<p><iframe class="ql-video" src="${video.url}"/></p>`;
+      });
+  }, [video]);
 
   const navigate = useNavigate();
 
@@ -45,6 +63,7 @@ const WritePage = () => {
     const formData = new FormData(e.target);
 
     const data = {
+      img: cover.filePath || "",
       title: formData.get("title"),
       category: formData.get("category"),
       desc: formData.get("desc"),
@@ -59,9 +78,11 @@ const WritePage = () => {
     <div className="flex flex-col gap-6 md:h-[calc(100vh-80px)]">
       <h1 className="text-cl font-light">Create a new post</h1>
       <form onSubmit={handleSubmit} className="flex flex-col gap-6 flex-1 mb-6">
-        {/* ImageKit Upload TBD */}
-        <IKUpload>
-          <button className=" bg-white w-max p-2 shadow-md rounded-xl text-sm text-gray-500">
+        <IKUpload type="image" setProgress={setProgress} setData={setCover}>
+          <button
+            type="button"
+            className=" bg-white w-max p-2 shadow-md rounded-xl text-sm text-gray-500"
+          >
             Add a cover image
           </button>
         </IKUpload>
@@ -96,22 +117,28 @@ const WritePage = () => {
         ></textarea>
         <div className="flex flex-1">
           <div className="flex flex-col gap-2 mr-2">
-            <span>Cover image 🌉</span>
-            <span>Image and video 🎥</span>
+            <IKUpload type="image" setProgress={setProgress} setData={setImg}>
+              <span> 🌉</span>
+            </IKUpload>
+            <IKUpload type="video" setProgress={setProgress} setData={setVideo}>
+              <span> 🎥</span>
+            </IKUpload>
           </div>
+          <ReactQuill
+            theme="snow"
+            className="bg-white shadow-md rounded-xl p-2 flex-1"
+            value={value}
+            onChange={setValue}
+            readOnly={mutation.isPending || (0 < progress && progress < 100)}
+          />
         </div>
-        <ReactQuill
-          theme="snow"
-          className="bg-white shadow-md rounded-xl p-2 flex-1"
-          value={value}
-          onChange={setValue}
-        />
         <button
-          disabled={mutation.isPending}
+          disabled={mutation.isPending || (0 < progress && progress < 100)}
           className="bg-blue-800 disabled:bg-blue-300 disabled:cursor-not-allowed text-white  rounded-xl font-medium mt-4 p-2 w-36 cursor-pointer"
         >
           {mutation.isPending ? "Loading..." : "send"}
         </button>
+        {"progress: " + progress + "%"}
         {mutation.isError && (
           <div className="text-red-500">Error: {mutation.error.message}</div>
         )}

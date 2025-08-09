@@ -1,36 +1,63 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
+import InfiniteScroll from "react-infinite-scroll-component";
 import PostListItem from "./PostListItem";
 import axios from "axios";
 
-const fetchPosts = async () => {
-  const response = await axios.get(`${import.meta.env.VITE_API_URL}/posts`);
+const fetchPosts = async ({ pageParam }) => {
+  console.log("Fetching posts with pageParam:", pageParam);
+  // ("Fetching posts with pageParam:", pageParam);
+  const response = await axios.get(`${import.meta.env.VITE_API_URL}/posts`, {
+    params: {
+      page: pageParam,
+      limit: 2, // Number of posts per page
+    },
+  });
   return response.data;
 };
 
 const PostList = () => {
-  const { isPending, error, data } = useQuery({
-    queryKey: ["repoData"],
-    queryFn: fetchPosts,
+  const {
+    data,
+    error,
+    fetchNextPage,
+    hasNextPage,
+    isFetching,
+    isFetchingNextPage,
+    status,
+  } = useInfiniteQuery({
+    queryKey: ["posts"],
+    queryFn: ({ pageParam }) => fetchPosts({ pageParam }),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage, pages) =>
+      lastPage.hasMore ? pages.length + 1 : undefined,
   });
 
-  if (isPending) return <div>Loading...</div>;
-  if (error) return <div>Error: {error.message}</div>;
+  if (status === "pending") return <div>Loading...</div>;
+  if (status === "error")
+    return <div>Error: {error.message ?? "Unknown error"}</div>;
 
-  console.log(data);
+  // all posts
+  const allPosts = data?.pages?.flatMap((page) => page.posts) ?? [];
+  console.log("infinite query data:", data);
 
   // return <div>{data.name}</div>
   return (
     <div className="flex flex-col gap-12 mb-8">
-      <PostListItem />
-      <PostListItem />
-      <PostListItem />
-      <PostListItem />
-      <PostListItem />
-      <PostListItem />
-      <PostListItem />
-      <PostListItem />
-      <PostListItem />
-      <PostListItem />
+      <InfiniteScroll
+        dataLength={allPosts.length} //This is important field to render the next data
+        next={fetchNextPage}
+        hasMore={!!hasNextPage}
+        loader={<h4>Loading...</h4>}
+        endMessage={
+          <p style={{ textAlign: "center" }}>
+            <b>Yay! You have seen it all</b>
+          </p>
+        }
+      >
+        {allPosts.map((post) => (
+          <PostListItem key={post._id} post={post} />
+        ))}
+      </InfiniteScroll>
     </div>
   );
 };

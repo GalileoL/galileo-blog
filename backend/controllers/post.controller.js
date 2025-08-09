@@ -3,8 +3,20 @@ import Post from "../models/post.model.js";
 import User from "../models/user.model.js";
 
 export const getPosts = async (req, res) => {
-  const posts = await Post.find();
-  res.status(200).send(posts);
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 2; // Number of posts per page
+  const posts = await Post.find()
+    .populate("user", "username") // Populate user details
+    .limit(limit)
+    .skip((page - 1) * limit);
+
+  // get total count of posts
+  const totalPosts = await Post.countDocuments();
+
+  console.log("Total posts:", totalPosts);
+
+  const hasMore = totalPosts > page * limit;
+  res.status(200).send({ posts, hasMore });
 };
 
 export const getPostBySlug = async (req, res) => {
@@ -36,11 +48,16 @@ export const createPost = async (req, res) => {
     counter++;
   }
 
+  // console.log("request body:", req.body);
+
   const newPost = await Post.create({
     ...req.body,
     slug,
     user: user._id,
   });
+
+  // console.log("New post created:", newPost);
+
   const post = await newPost.save();
   res.status(201).send(post);
 };
