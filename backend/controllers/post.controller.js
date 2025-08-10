@@ -5,8 +5,63 @@ import User from "../models/user.model.js";
 export const getPosts = async (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 2; // Number of posts per page
-  const posts = await Post.find()
+
+  const query = {};
+
+  console.log("req.query:", req.query);
+
+  const cat = req.query.cat;
+  const author = req.query.author;
+  const searchQuery = req.query.search;
+  const sortQuery = req.query.sort;
+  const featured = req.query.featured;
+  if (cat) {
+    query.category = cat;
+  }
+
+  if (searchQuery) {
+    // search title with regex and case insensitive
+    query.title = { $regex: searchQuery, $options: "i" };
+  }
+
+  if (author) {
+    const user = await User.findOne({ username: author }).select("_id");
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    query.user = user._id;
+  }
+
+  let sortObj = { createdAt: -1 }; // Default sort by createdAt descending
+  if (sortQuery) {
+    switch (sortQuery) {
+      case "newest":
+        sortObj = { createdAt: -1 };
+        break;
+      case "oldest":
+        sortObj = { createdAt: 1 };
+        break;
+      case "popular":
+        sortObj = { visit: -1 };
+        break;
+      case "trending":
+        sortObj = { visit: -1 };
+        query.createdAt = {
+          $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+        }; // Last 7 days
+        break;
+      default:
+        sortObj = { createdAt: -1 }; // Default case
+        break;
+    }
+  }
+  if (featured) {
+    query.isFeatured = true;
+  }
+
+  const posts = await Post.find(query)
     .populate("user", "username") // Populate user details
+    .sort(sortObj)
     .limit(limit)
     .skip((page - 1) * limit);
 
@@ -21,8 +76,8 @@ export const getPosts = async (req, res) => {
 
 export const getPostBySlug = async (req, res) => {
   const { slug } = req.params;
-  const post = await Post.findOne({ slug });
-  res.status(200).send(post);
+  const post = await Post.findOne({ slug }).populate("user", "username img");
+  res.status(200).json(post);
 };
 
 export const createPost = async (req, res) => {
@@ -50,7 +105,7 @@ export const createPost = async (req, res) => {
 
   // console.log("request body:", req.body);
 
-  const newPost = await Post.create({
+  const newPost = new Post({
     ...req.body,
     slug,
     user: user._id,
@@ -64,10 +119,16 @@ export const createPost = async (req, res) => {
 
 export const deletePost = async (req, res) => {
   const clerkUserId = req.auth().userId;
-  console.log(clerkUserId);
-  console.log(req.auth());
+  // console.log(clerkUserId);
+  // console.log(req.auth());
   if (!clerkUserId) {
     return res.status(401).json({ message: "Unauthorized in deletePost" });
+  }
+
+  const role = req.auth().sessionClaims?.metadata?.role || "user";
+  if (role === "admin") {
+    await Post.findByIdAndDelete(req.params.id);
+    return res.status(200).send("Post deleted successfully");
   }
 
   const user = await User.findOne({ clerkUserId });
@@ -85,6 +146,36 @@ export const deletePost = async (req, res) => {
   }
 
   res.status(200).send("Post deleted successfully");
+};
+
+export const featurePost = async (req, res) => {
+  const clerkUserId = req.auth().userId;
+  const postId = req.body.postId;
+  if (!clerkUserId) {
+    return res.status(401).json({ message: "Unauthorized in featurePost" });
+  }
+
+  const role = req.auth().sessionClaims?.metadata?.role || "user";
+  if (role !== "admin") {
+    return res.status(403).json({ message: "Forbidden in featurePost" });
+  }
+
+  const post = await Post.findById(postId);
+  if (!post) {
+    return res.status(404).json({ message: "Post not found" });
+  }
+
+  const isFeatured = post.isFeatured;
+  const updatedPost = await Post.findByIdAndUpdate(
+    postId,
+    { isFeatured: !isFeatured },
+    { new: true } // Return the updated document
+  );
+  // await post.save();
+
+  res
+    .status(200)
+    .json({ message: "Post featured status updated", post: updatedPost });
 };
 
 const imagekit = new ImageKit({

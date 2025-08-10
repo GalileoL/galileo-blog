@@ -3,8 +3,9 @@ import IKImage from "../components/imagekit/IKImage";
 import { Comments, PostMenuActions, Search } from "../components";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
+import { format } from "timeago.js";
 
-const getPostBySlug = async (slug) => {
+const fetchPostBySlug = async (slug) => {
   const response = await axios.get(
     `${import.meta.env.VITE_API_URL}/posts/${slug}`
   );
@@ -17,7 +18,7 @@ const SinglePostPage = () => {
 
   const { isPending, error, data } = useQuery({
     queryKey: ["post", slug],
-    queryFn: () => getPostBySlug(slug),
+    queryFn: () => fetchPostBySlug(slug),
   });
 
   if (isPending) return <div>Loading...</div>;
@@ -30,34 +31,34 @@ const SinglePostPage = () => {
       <div className="flex gap-8">
         <div className="lg:w-3/5 flex flex-col gap-8">
           <h1 className="text-xl md:text-3xl xl:text-4xl 2xl:text-5xl font-semibold">
-            Lorem ipsum dolor, sit amet consectetur adipisicing elit.
+            {data.title}
           </h1>
           <div className="flex items-center gap-2 text-gray-500 text-sm">
             <span>written by</span>
-            <Link className="text-blue-800">John Doe</Link>
+            <Link className="text-blue-800">{data.user.username}</Link>
             <span>on</span>
-            <Link className="text-blue-800">Web Design</Link>
-            <span>2 days ago</span>
+            <Link className="text-blue-800">{data.category}</Link>
+            <span>{format(data.createdAt)}</span>
           </div>
-          <p className="text-gray-500 font-medium">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam,
-            quos.
-          </p>
+          <p className="text-gray-500 font-medium">{data.desc}</p>
         </div>
-        <div className="hidden lg:block w-2/5">
-          <IKImage
-            src="/postImg.jpeg"
-            alt="post"
-            className="rounded-2xl object-cover"
-            width="735"
-            height="412"
-          />
-        </div>
+        {data.img && (
+          <div className="hidden lg:block w-2/5">
+            <IKImage
+              src={data.img}
+              alt="post"
+              className="rounded-2xl object-cover"
+              width="735"
+              height="412"
+            />
+          </div>
+        )}
       </div>
       {/* content */}
       <div className="flex flex-col md:flex-row gap-12">
         {/* text */}
         <div className="lg:text-lg flex flex-col gap-4">
+          <p>{data.content}</p>
           <p>
             Lorem ipsum dolor sit, amet consectetur adipisicing elit. Asperiores
             repellat, aspernatur inventore similique facilis praesentium, odio
@@ -161,14 +162,18 @@ const SinglePostPage = () => {
           <div className="flex flex-col gap-4">
             {/* image and name */}
             <div className="flex  gap-8 items-center">
-              <IKImage
-                src="/userImg.jpeg"
-                alt="author"
-                className="rounded-full object-cover"
-                width="50"
-                height="50"
-              />
-              <Link className="text-lg text-blue-800">John Doe</Link>
+              {data.user && (
+                <IKImage
+                  src={data.user.img || "userImg.jpeg"}
+                  alt="author"
+                  className="rounded-full object-cover"
+                  width="50"
+                  height="50"
+                />
+              )}
+              <Link className="text-lg text-blue-800">
+                {data.user.username}
+              </Link>
             </div>
             <p className="text-gray-500 text-sm">
               Lorem ipsum dolor sit amet consectetur adipisicing elit.
@@ -194,7 +199,7 @@ const SinglePostPage = () => {
               </Link>
             </div>
           </div>
-          <PostMenuActions />
+          <PostMenuActions post={data} />
           <h1 className="mt-8 mb-4 text-sm font-medium">Categories</h1>
           <div className="flex flex-col gap-2 text-sm">
             <Link className="underline" to="/test">
@@ -220,7 +225,7 @@ const SinglePostPage = () => {
           </div>
         </div>
       </div>
-      <Comments />
+      <Comments postId={data._id} />
     </div>
   );
 };

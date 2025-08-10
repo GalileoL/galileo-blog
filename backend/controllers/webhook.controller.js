@@ -1,5 +1,6 @@
 import { Webhook } from "svix";
 import User from "../models/user.model.js";
+import mongoose from "mongoose";
 
 export const clerkWebhook = async (req, res) => {
   const WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SECRET;
@@ -19,17 +20,30 @@ export const clerkWebhook = async (req, res) => {
     res.status(400).json({ message: " webhook verification failed" });
   }
 
-  // console.log(`${event.type} event received`, event.data.id);
+  console.log(`[WH]. ${event.type} event received`, event.data.id);
+  console.log(
+    "[WH] mongo ready state:",
+    mongoose.connection.readyState,
+    "db name:",
+    mongoose.connection.db?.databaseName,
+    "db host:",
+    mongoose.connection.host
+  );
 
-  if (event.type === "user.created") {
-    const user = new User({
-      clerkUserId: event.data.id,
-      username:
-        event.data.username || event.data.email_addresses[0].email_address,
-      email: event.data.email_addresses[0].email_address,
-      img: event.data.profile_image_url,
-    });
-    await user.save();
-    // res.status(200).json({ message: "user created" });
+  try {
+    if (event.type === "user.created") {
+      const user = new User({
+        clerkUserId: event.data.id,
+        username:
+          event.data.username || event.data.email_addresses[0].email_address,
+        email: event.data.email_addresses[0].email_address,
+        img: event.data.profile_image_url,
+      });
+      await user.save();
+    }
+    res.status(200).json({ ok: true, type: event.type, id: event.data.id });
+  } catch (error) {
+    console.error("Error processing webhook:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 };

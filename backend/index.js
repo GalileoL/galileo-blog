@@ -6,6 +6,9 @@ import webhookRoute from "./routes/webhook.route.js";
 import connectDB from "./lib/connectDB.js";
 import { clerkMiddleware } from "@clerk/express";
 import cors from "cors";
+import User from "./models/user.model.js";
+import Post from "./models/post.model.js";
+import Comment from "./models/comment.model.js";
 
 const app = express();
 
@@ -13,6 +16,39 @@ app.use(cors(process.env.CLIENT_URL));
 app.use(clerkMiddleware());
 
 app.use("/api/webhooks", webhookRoute);
+
+// sync indexes for User, Post, and Comment models
+// if (process.env.NODE_ENV !== "production") {
+//   try {
+//     // for user
+//     console.log("[idx] syncing User indexes...");
+//     const before = await User.collection.getIndexes().catch(() => ({}));
+//     console.log("[idx] before:", Object.keys(before));
+//     await User.syncIndexes(); // 关键：会删除 schema 中不存在的索引（如 clerkId_1）
+//     const after = await User.collection.getIndexes();
+//     console.log("[idx] after:", Object.keys(after));
+
+//     // for post
+//     console.log("[idx] syncing Post indexes...");
+//     const beforePost = await Post.collection.getIndexes().catch(() => ({}));
+//     console.log("[idx] beforePost:", Object.keys(beforePost));
+//     await Post.syncIndexes();
+//     const afterPost = await Post.collection.getIndexes();
+//     console.log("[idx] afterPost:", Object.keys(afterPost));
+
+//     // for comment
+//     console.log("[idx] syncing Comment indexes...");
+//     const beforeComment = await Comment.collection
+//       .getIndexes()
+//       .catch(() => ({}));
+//     console.log("[idx] beforeComment:", Object.keys(beforeComment));
+//     await Comment.syncIndexes();
+//     const afterComment = await Comment.collection.getIndexes();
+//     console.log("[idx] afterComment:", Object.keys(afterComment));
+//   } catch (e) {
+//     console.error("[idx] syncIndexes error:", e);
+//   }
+// }
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

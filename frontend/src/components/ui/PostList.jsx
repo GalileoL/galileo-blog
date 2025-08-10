@@ -2,20 +2,28 @@ import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
 import InfiniteScroll from "react-infinite-scroll-component";
 import PostListItem from "./PostListItem";
 import axios from "axios";
+import { useSearchParams } from "react-router-dom";
 
-const fetchPosts = async ({ pageParam }) => {
+const fetchPosts = async (pageParam, searchParams) => {
+  const searchParamsObj = Object.fromEntries([...searchParams]);
+
+  console.log("Search params:", searchParamsObj);
+
   console.log("Fetching posts with pageParam:", pageParam);
-  // ("Fetching posts with pageParam:", pageParam);
+
   const response = await axios.get(`${import.meta.env.VITE_API_URL}/posts`, {
     params: {
       page: pageParam,
-      limit: 2, // Number of posts per page
+      limit: 10, // Number of posts per page
+      ...searchParamsObj, // Include search params if any
     },
   });
   return response.data;
 };
 
 const PostList = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+
   const {
     data,
     error,
@@ -25,20 +33,20 @@ const PostList = () => {
     isFetchingNextPage,
     status,
   } = useInfiniteQuery({
-    queryKey: ["posts"],
-    queryFn: ({ pageParam }) => fetchPosts({ pageParam }),
+    queryKey: ["posts", searchParams.toString()],
+    queryFn: ({ pageParam }) => fetchPosts(pageParam, searchParams),
     initialPageParam: 1,
     getNextPageParam: (lastPage, pages) =>
       lastPage.hasMore ? pages.length + 1 : undefined,
   });
 
-  if (status === "pending") return <div>Loading...</div>;
-  if (status === "error")
-    return <div>Error: {error.message ?? "Unknown error"}</div>;
+  if (isFetching) return <div className="text-center">Loading posts...</div>;
+
+  if (error) return <div>Error: {error.message ?? "Unknown error"}</div>;
 
   // all posts
   const allPosts = data?.pages?.flatMap((page) => page.posts) ?? [];
-  console.log("infinite query data:", data);
+  // console.log("infinite query data:", data);
 
   // return <div>{data.name}</div>
   return (
