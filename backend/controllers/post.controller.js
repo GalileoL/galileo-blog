@@ -1,6 +1,7 @@
 import ImageKit from "imagekit";
 import Post from "../models/post.model.js";
 import User from "../models/user.model.js";
+import { sanitizeHTML } from "../lib/sanitize.js";
 
 export const getPosts = async (req, res) => {
   const page = parseInt(req.query.page) || 1;
@@ -92,6 +93,9 @@ export const createPost = async (req, res) => {
     return res.status(404).json({ message: "User not found" });
   }
 
+  // use sanitize to prevent XSS attacks
+  const safeContent = sanitizeHTML(req.body.content);
+
   // Generate a slug from the title
   let slug = req.body.title.replace(/ /g, "-").toLowerCase();
 
@@ -109,6 +113,7 @@ export const createPost = async (req, res) => {
     ...req.body,
     slug,
     user: user._id,
+    content: safeContent,
   });
 
   // console.log("New post created:", newPost);
