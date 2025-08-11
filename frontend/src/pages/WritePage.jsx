@@ -111,6 +111,35 @@ const WritePage = () => {
             Add a cover image
           </button>
         </IKUpload>
+        {/* if select cover image (uploaded cover image), show preview */}
+        {cover && (
+          <div className="relative w-64 sm:w-72 md:w-80 lg:w-[28rem] aspect-video">
+            {/* preview */}
+            <img
+              src={
+                cover.url ||
+                `${import.meta.env.VITE_IMAGEKIT_URL_ENDPOINT}/${
+                  cover.filePath
+                }`
+              }
+              alt="Cover"
+              className="h-full w-full object-cover rounded-2xl shadow-lg ring-1 ring-black/10"
+            />
+
+            {/* left up corner remove button */}
+            <button
+              type="button"
+              onClick={() => setCover(null)}
+              className="absolute top-2 right-2 inline-flex items-center gap-1 rounded-full bg-red-500/90 px-3 py-1.5
+                 text-xs font-medium text-white shadow-sm hover:bg-red-600 focus:outline-none
+                 focus-visible:ring-2 focus-visible:ring-white/80 transition"
+              aria-label="Remove cover"
+            >
+              Remove
+            </button>
+          </div>
+        )}
+
         <input
           type="text"
           placeholder="My Awesome Story"
