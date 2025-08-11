@@ -1,6 +1,7 @@
 import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
 import InfiniteScroll from "react-infinite-scroll-component";
 import PostListItem from "./PostListItem";
+import PostListSkeleton from "../skeletons/PostListSkeleton";
 import axios from "axios";
 import { useSearchParams } from "react-router-dom";
 
@@ -40,7 +41,14 @@ const PostList = () => {
       lastPage.hasMore ? pages.length + 1 : undefined,
   });
 
-  if (isFetching) return <div className="text-center">Loading posts...</div>;
+  // if (status === "pending")
+  //   return (
+  //     <div className="flex flex-col gap-4">
+  //       {Array.from({ length: 10 }).map((_, index) => (
+  //         <PostListSkeleton key={index} />
+  //       ))}
+  //     </div>
+  //   );
 
   if (error) return <div>Error: {error.message ?? "Unknown error"}</div>;
 

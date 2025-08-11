@@ -3,6 +3,10 @@ import IKImage from "../imagekit/IKImage";
 import { format } from "timeago.js";
 
 const PostListItem = ({ post }) => {
+  console.log("PostListItem post:", post);
+  // check if img is not empty
+  console.log("PostListItem post.img:", post.img);
+
   return (
     <div className="flex flex-col xl:flex-row gap-8 mb-8">
       {/* image */}
@@ -10,7 +14,7 @@ const PostListItem = ({ post }) => {
         <div className="md:hidden xl:block xl:w-1/3 ">
           <IKImage
             src={post.img}
-            alt="post"
+            alt="post-image"
             className="rounded-2xl object-cover"
             width="735"
             //   to best optimize the image, we set max width of the image to 735px (767px - 1rem*2) which is the biggest width of the container
