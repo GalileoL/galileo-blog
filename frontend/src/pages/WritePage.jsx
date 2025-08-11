@@ -1,12 +1,15 @@
 import { useAuth, useUser } from "@clerk/clerk-react";
 import "react-quill-new/dist/quill.snow.css";
-import ReactQuill from "react-quill-new";
+// import ReactQuill from "react-quill-new";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useState, lazy, Suspense } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { IKUpload } from "../components";
+import DOMPurify from "dompurify";
+
+const ReactQuill = lazy(() => import("react-quill-new"));
 
 const WritePage = () => {
   const { isLoaded, isSignedIn } = useUser();
@@ -62,17 +65,39 @@ const WritePage = () => {
     e.preventDefault();
     const formData = new FormData(e.target);
 
+    // XSS protection: sanitize the content
+    const safeContent = DOMPurify.sanitize(value, {
+      USE_PROFILES: { html: true },
+    });
+
     const data = {
       img: cover.filePath || "",
       title: formData.get("title"),
       category: formData.get("category"),
       desc: formData.get("desc"),
-      content: value,
+      content: safeContent,
     };
     console.log("Submitting post data:", data);
+    // check title
+    if (!data.title) {
+      toast.error("Title is required");
+      return;
+    }
+    // check description
+    if (!data.desc) {
+      toast.error("Description is required");
+      return;
+    }
+    // check content
+    if (!data.content) {
+      toast.error("Content is required");
+      return;
+    }
 
     mutation.mutate(data);
   };
+
+  const editorDisabled = mutation.isPending || (0 < progress && progress < 100);
 
   return (
     <div className="flex flex-col gap-6 md:h-[calc(100vh-80px)]">
@@ -124,13 +149,16 @@ const WritePage = () => {
               <span> 🎥</span>
             </IKUpload>
           </div>
-          <ReactQuill
-            theme="snow"
-            className="bg-white shadow-md rounded-xl p-2 flex-1"
-            value={value}
-            onChange={setValue}
-            readOnly={mutation.isPending || (0 < progress && progress < 100)}
-          />
+          {/* lazy load editor */}
+          <Suspense fallback={<div>Loading editor...</div>}>
+            <ReactQuill
+              theme="snow"
+              className="bg-white shadow-md rounded-xl p-2 flex-1"
+              value={value}
+              onChange={setValue}
+              readOnly={editorDisabled}
+            />
+          </Suspense>
         </div>
         <button
           disabled={mutation.isPending || (0 < progress && progress < 100)}

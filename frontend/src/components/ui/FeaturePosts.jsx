@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { format } from "timeago.js";
+import FeaturePostsSkeleton from "../skeletons/FeaturePostsSkeleton";
 
 const fetchFeaturedPosts = async () => {
   const response = await axios.get(
@@ -18,8 +19,7 @@ const FeaturePosts = () => {
     queryFn: () => fetchFeaturedPosts(),
   });
 
-  if (isPending)
-    return <div className="text-center">Loading featured posts...</div>;
+  if (isPending) return <FeaturePostsSkeleton />;
   if (error) return <div>Error: {error.message ?? "Unknown error"}</div>;
 
   const posts = data?.posts || [];

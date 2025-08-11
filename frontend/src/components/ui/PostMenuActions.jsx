@@ -55,6 +55,7 @@ const PostMenuActions = ({ post }) => {
 
   const queryClient = useQueryClient();
 
+  // same as feature, use optimistic update
   const saveMutation = useMutation({
     mutationFn: async () => {
       const token = await getToken();
@@ -68,6 +69,20 @@ const PostMenuActions = ({ post }) => {
         }
       );
     },
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey: ["savedPosts"] });
+      const prev = queryClient.getQueryData(["savedPosts"]);
+      queryClient.setQueryData(["savedPosts"], (old) => {
+        const ids = old?.data ?? [];
+        const exists = ids.includes(post._id);
+        return {
+          data: exists
+            ? ids.filter((id) => id !== post._id)
+            : [...ids, post._id],
+        };
+      });
+      return { prev };
+    },
     onSuccess: (res) => {
       console.log("Post saved/unsaved successfully:", res.data);
       // Invalidate the saved posts query to refetch the latest saved posts
@@ -77,6 +92,9 @@ const PostMenuActions = ({ post }) => {
     onError: (error) => {
       console.error("Error saving post:", error);
       toast.error(error.response?.data || "Failed to save post");
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["savedPosts"] });
     },
   });
 
@@ -172,15 +190,7 @@ const PostMenuActions = ({ post }) => {
               // when saveMutation is pending, fill the heart with black if the post is saved, otherwise leave it empty
               //  this can optimistically update the UI
 
-              fill={
-                saveMutation.isPending
-                  ? isSaved
-                    ? "none"
-                    : "black"
-                  : isSaved
-                  ? "black"
-                  : "none"
-              }
+              fill={isSaved ? "black" : "none"}
             ></path>
           </svg>
           <span>save this post</span>

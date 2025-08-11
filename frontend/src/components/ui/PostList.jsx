@@ -41,14 +41,14 @@ const PostList = () => {
       lastPage.hasMore ? pages.length + 1 : undefined,
   });
 
-  // if (status === "pending")
-  //   return (
-  //     <div className="flex flex-col gap-4">
-  //       {Array.from({ length: 10 }).map((_, index) => (
-  //         <PostListSkeleton key={index} />
-  //       ))}
-  //     </div>
-  //   );
+  if (status === "pending")
+    return (
+      <div className="flex flex-col gap-4">
+        {Array.from({ length: 10 }).map((_, index) => (
+          <PostListSkeleton key={index} />
+        ))}
+      </div>
+    );
 
   if (error) return <div>Error: {error.message ?? "Unknown error"}</div>;
 
