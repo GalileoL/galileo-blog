@@ -1,3 +1,4 @@
+import "dotenv/config";
 import express from "express";
 import userRoute from "./routes/user.route.js";
 import postRoute from "./routes/post.route.js";
@@ -6,9 +7,6 @@ import webhookRoute from "./routes/webhook.route.js";
 import connectDB from "./lib/connectDB.js";
 import { clerkMiddleware } from "@clerk/express";
 import cors from "cors";
-import User from "./models/user.model.js";
-import Post from "./models/post.model.js";
-import Comment from "./models/comment.model.js";
 
 const app = express();
 
