@@ -10,7 +10,7 @@ import { ClerkProvider } from "@clerk/clerk-react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ToastContainer } from "react-toastify";
 
-// ✅ React Query 推荐的默认配置（减少抖动）
+// React Query configuration
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -21,7 +21,7 @@ const queryClient = new QueryClient({
   },
 });
 
-// ✅ 改成懒加载
+// lazy-loaded components
 const HomePage = lazy(() => import("./pages/HomePage.jsx"));
 const PostListPage = lazy(() => import("./pages/PostListPage.jsx"));
 const SinglePostPage = lazy(() => import("./pages/SinglePostPage.jsx"));
@@ -34,7 +34,7 @@ const NotFoundPage = lazy(() => import("./pages/NotFoundPage.jsx"));
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 if (!PUBLISHABLE_KEY) throw new Error("Missing Publishable Key");
 
-// ✅ 用 Suspense 包住各个 route 元素
+// Wrap each route element with Suspense
 const router = createBrowserRouter([
   {
     element: <MainLayout />,
