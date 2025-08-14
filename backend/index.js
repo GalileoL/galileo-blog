@@ -52,14 +52,15 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // allow cross-origin requests
-app.use(function (req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept"
-  );
-  next();
-});
+// make it strict, only allow requests from the client URL
+// app.use(function (req, res, next) {
+//   res.header("Access-Control-Allow-Origin", "*");
+//   res.header(
+//     "Access-Control-Allow-Headers",
+//     "Origin, X-Requested-With, Content-Type, Accept"
+//   );
+//   next();
+// });
 
 console.log("Hello World");
 // console.log(process.env.test);

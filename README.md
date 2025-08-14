@@ -1,5 +1,11 @@
 # Galileo Blog
 
+This project is for exercise purposes only and is not intended for production use.
+Some features may not be fully implemented or tested.
+And the data is just for demo purposes.
+
+TBD: After information review by Alibaba Cloud and the internet filing process in China, the project will be launched for preview.
+
 A full-stack blog platform built with **React + Vite**, **Node.js/Express**, **MongoDB (Mongoose)**, **Clerk** for auth, and **ImageKit** for media uploads. It features rich-text editing, infinite scrolling, save/feature posts, comments, and a hardened Clerk webhook pipeline.
 
 > Demo stack highlights: TanStack Query for data fetching, optimistic updates, ImageKit uploads with progress/abort, and Svix-verified Clerk webhooks with idempotent upsert.

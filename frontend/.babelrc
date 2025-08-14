@@ -1,0 +1,22 @@
+{
+  "presets": [
+    [
+      // this is babel preset for modern JavaScript
+      "@babel/preset-env",
+      {
+        // Specify the target browsers
+        "targets": {
+          "browsers": ["> 1%", "last 2 versions", "not ie <= 8"]
+        }
+      }
+    ],
+    // this is babel preset for React
+    [
+      "@babel/preset-react",
+      {
+        // Enable React JSX transformation
+        "runtime": "automatic"
+      }
+    ]
+  ]
+}

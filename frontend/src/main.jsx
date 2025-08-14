@@ -33,6 +33,7 @@ const NotFoundPage = lazy(() => import("./pages/NotFoundPage.jsx"));
 // Import your Publishable Key
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 if (!PUBLISHABLE_KEY) throw new Error("Missing Publishable Key");
+console.log(import.meta.env.VITE_API_URL);
 
 // Wrap each route element with Suspense
 const router = createBrowserRouter([
