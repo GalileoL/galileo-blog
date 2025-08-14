@@ -49,18 +49,42 @@ A full-stack blog platform built with **React + Vite**, **Node.js/Express**, **M
 git clone https://github.com/GalileoL/galileo-blog
 cd galileo-blog
 
-# backend
+# Backend setup
 cd backend && npm i
-npm run dev
+npm run dev                          # Development with .env.development
+npm start:prod                       # Production with .env.production
 
-# frontend (in another terminal)
+# Frontend setup (in another terminal)
 cd ../frontend && npm i
-npm run dev
+
+# Choose your build tool:
+# Option 1: Vite (recommended for development)
+npm run dev:vite                     # Development server with Vite
+npm run build:vite                   # Production build with Vite
+npm run preview:vite                 # Preview production build
+
+# Option 2: Webpack (with optimizations)
+npm run dev:webpack                  # Development server with Webpack
+npm run build:webpack:dev            # Development build
+npm run build:webpack:prod           # Production build with bundle analyzer
+npm run build:webpack:dll            # Generate DLL for vendor libraries (optional)
 ```
 
 ### Environment Variables
 
-Create `.env` files in both `backend` and `frontend` directories based on the provided `.env.example` files. Ensure you set the required variables like MongoDB URI, Clerk keys, and ImageKit credentials.
+Create environment files in both `backend` and `frontend` directories:
+
+**Backend:**
+
+- `.env.development` - for development mode
+- `.env.production` - for production mode
+
+**Frontend:**
+
+- `.env.development` - for development mode
+- `.env.production` - for production mode
+
+Use the provided `.env.example` files as templates. Ensure you set the required variables like MongoDB URI, Clerk keys, and ImageKit credentials.
 
 ### API Endpoints
 
@@ -99,89 +123,34 @@ galileo-blog/
 ├── backend/                        # Node.js/Express API server
 │   ├── package.json
 │   ├── index.js                    # Express app entry point
-│   │
+│   ├── .env.development            # Development environment
+│   ├── .env.production             # Production environment
 │   ├── controllers/                # Business logic
-│   │   ├── comment.controller.js   # Comment CRUD operations
-│   │   ├── post.controller.js      # Post CRUD, ImageKit upload auth
-│   │   ├── user.controller.js      # User saved posts management
-│   │   └── webhook.controller.js   # Clerk webhook handling (Svix verify)
-│   │
 │   ├── models/                     # Mongoose schemas
-│   │   ├── comment.model.js        # Comment schema (user, post, desc)
-│   │   ├── post.model.js           # Post schema (title, slug, content, etc.)
-│   │   └── user.model.js           # User schema (Clerk integration)
-│   │
 │   ├── routes/                     # Express route definitions
-│   │   ├── comment.route.js        # Comment API routes
-│   │   ├── post.route.js           # Post API routes
-│   │   ├── user.route.js           # User API routes
-│   │   └── webhook.route.js        # Webhook API routes
-│   │
 │   ├── middlewares/                # Custom middleware
-│   │   └── increaseVisit.js        # Post view counter middleware
-│   │
 │   └── lib/                        # Utility modules
-│       └── connectDB.js            # MongoDB connection setup
 │
-└── frontend/                       # React + Vite client application
+└── frontend/                       # React client application
     ├── package.json
     ├── index.html
-    ├── vite.config.js
-    ├── eslint.config.js
-    ├── README.md
+    ├── .env.development            # Development environment
+    ├── .env.production             # Production environment
+    │
+    ├── vite.config.js              # Vite configuration
+    ├── webpack.base.config.js      # Webpack base configuration
+    ├── webpack.dev.config.js       # Webpack development configuration
+    ├── webpack.prod.config.js      # Webpack production configuration
+    ├── webpack.dll.config.js       # Webpack DLL configuration
+    │
+    ├── dist-vite/                  # Vite build output
+    ├── dist-webpack/               # Webpack build output
     │
     ├── public/                     # Static assets
-    │   ├── favicon.ico
-    │   ├── logo.png
-    │   ├── *.svg                   # Social media icons
-    │   └── *.jpeg                  # Featured post images
-    │
     └── src/                        # React source code
-        ├── main.jsx                # React app entry point
-        ├── App.jsx                 # Root component
-        ├── App.css
-        ├── index.css
-        │
-        ├── assets/                 # Static assets
-        │   └── react.svg
-        │
         ├── components/             # Reusable components
-        │   ├── index.js            # Barrel exports
-        │   │
-        │   ├── imagekit/           # ImageKit integration
-        │   │   ├── IKImage.jsx     # ImageKit image component
-        │   │   └── IKUpload.jsx    # ImageKit upload component
-        │   │
-        │   ├── skeletons/          # Loading skeletons
-        │   │   ├── FeaturePostsSkeleton.jsx
-        │   │   ├── PostListSkeleton.jsx
-        │   │   └── Skeleton.jsx
-        │   │
-        │   └── ui/                 # UI components
-        │       ├── Comment.jsx     # Individual comment display
-        │       ├── Comments.jsx    # Comments list & form
-        │       ├── FeaturePosts.jsx # Featured posts showcase
-        │       ├── MainCategories.jsx # Category navigation
-        │       ├── NaviBar.jsx     # Top navigation
-        │       ├── PostList.jsx    # Infinite scroll post list
-        │       ├── PostListItem.jsx # Single post item
-        │       ├── PostMenuActions.jsx # Save/Feature/Delete actions
-        │       ├── Search.jsx      # Search functionality
-        │       └── SideMenu.jsx    # Mobile navigation menu
-        │
-        ├── layouts/                # Layout components
-        │   ├── index.js            # Barrel exports
-        │   └── MainLayout.jsx      # Main app layout
-        │
-        └── pages/                  # Page components (routes)
-            ├── index.js            # Barrel exports
-            ├── HomePage.jsx        # Landing page
-            ├── LoginPage.jsx       # Authentication page
-            ├── NotFoundPage.jsx    # 404 error page
-            ├── PostListPage.jsx    # Posts listing with filters
-            ├── RegisterPage.jsx    # User registration
-            ├── SinglePostPage.jsx  # Individual post view
-            └── WritePage.jsx       # Rich text post editor
+        ├── pages/                  # Page components (routes)
+        └── layouts/                # Layout components
 ```
 
 ---
@@ -194,6 +163,13 @@ galileo-blog/
 - **React Quill** lazy-loaded via `React.lazy` + `Suspense` to reduce first load
 - **ImageKit uploads** with progress/abort; recommended to enable LQIP + responsive `srcset`
 - **Skeletons/placeholders** to improve perceived performance
+- **Dual Build System Support**:
+  - **Vite** for fast development and modern builds
+  - **Webpack** with advanced optimizations:
+    - Bundle analyzer for production builds
+    - DLL configuration for vendor library caching (optional)
+    - Separate development and production configurations
+    - CSS minimization and code splitting
 
 ---
 
