@@ -67,6 +67,7 @@ const IKUpload = ({
       publicKey: auth.publicKey,
       signature: auth.signature,
       urlEndpoint,
+      tags: ["temp"], // add temp tags for uploaded images
       onProgress: (event) => {
         // process percentage progress
         if (event && event.total) {

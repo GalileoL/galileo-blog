@@ -86,6 +86,8 @@ Create environment files in both `backend` and `frontend` directories:
 
 Use the provided `.env.example` files as templates. Ensure you set the required variables like MongoDB URI, Clerk keys, and ImageKit credentials.
 
+**Important:** Remember to configure the Clerk webhook endpoint in your Clerk dashboard (`/api/webhooks/clerk`) to ensure the authentication system works properly with user creation and updates.
+
 ### API Endpoints
 
 #### Posts
@@ -162,6 +164,11 @@ galileo-blog/
   - invalidation on settle for eventual consistency
 - **React Quill** lazy-loaded via `React.lazy` + `Suspense` to reduce first load
 - **ImageKit uploads** with progress/abort; recommended to enable LQIP + responsive `srcset`
+- **Smart ImageKit Tagging System**:
+  - Uploads receive temporary tags on client-side
+  - Tags are removed when post is successfully created (backend)
+  - Incomplete uploads auto-delete after 24h if tags remain
+  - Prevents orphaned files from incomplete form submissions
 - **Skeletons/placeholders** to improve perceived performance
 - **Dual Build System Support**:
   - **Vite** for fast development and modern builds

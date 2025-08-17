@@ -93,6 +93,40 @@ export const createPost = async (req, res) => {
     return res.status(404).json({ message: "User not found" });
   }
 
+  // log body
+  console.log(req.body);
+  let imageFileName = req.body.img || "";
+  if (imageFileName.startsWith("/")) {
+    imageFileName = imageFileName.slice(1);
+  }
+  let imagekitFileId = req.body.imagekitFileId || "";
+
+  // search fileId in imagekit by fileName
+  if (imageFileName) {
+    try {
+      const fileDetails = await imagekit.listFiles({
+        searchQuery: `name:${imageFileName} AND tags IN ["temp"]`,
+        limit: 1,
+      });
+      if (!fileDetails) {
+        console.log("File not found in ImageKit:", imageFileName);
+      }
+      console.log("Image file details:", fileDetails);
+      imagekitFileId = fileDetails.fileId;
+    } catch (error) {
+      console.error("Error fetching image details:", error);
+    }
+  }
+
+  // remove temp tags in imagekit library for uploaded images
+  if (imagekitFileId) {
+    try {
+      await imagekit.bulkRemoveTags([imagekitFileId], ["temp"]);
+    } catch (error) {
+      console.error("Error removing temp tags:", error);
+    }
+  }
+
   // use sanitize to prevent XSS attacks
   const safeContent = sanitizeHTML(req.body.content);
 

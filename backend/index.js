@@ -93,6 +93,8 @@ app.use("/api/comments", commentRoute);
 
 // error handling
 app.use((err, req, res, next) => {
+  console.log("Error occurred:", err);
+
   res.status(err.status || 500);
   res.json({
     message: err.message || "Internal Server Error",
