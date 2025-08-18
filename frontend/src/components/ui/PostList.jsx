@@ -4,7 +4,7 @@ import PostListItem from "./PostListItem";
 import PostListSkeleton from "../skeletons/PostListSkeleton";
 import axios from "axios";
 import { useSearchParams } from "react-router-dom";
-
+import { PostsAPI } from "../../api/req_modules/posts.js";
 const fetchPosts = async (pageParam, searchParams) => {
   const searchParamsObj = Object.fromEntries([...searchParams]);
 
@@ -12,14 +12,20 @@ const fetchPosts = async (pageParam, searchParams) => {
 
   console.log("Fetching posts with pageParam:", pageParam);
 
-  const response = await axios.get(`${import.meta.env.VITE_API_URL}/posts`, {
-    params: {
-      page: pageParam,
-      limit: 10, // Number of posts per page
-      ...searchParamsObj, // Include search params if any
-    },
+  // const response = await axios.get(`${import.meta.env.VITE_API_URL}/posts`, {
+  //   params: {
+  //     page: pageParam,
+  //     limit: 10, // Number of posts per page
+  //     ...searchParamsObj, // Include search params if any
+  //   },
+  // });
+  const posts = await PostsAPI.getPosts({
+    page: pageParam,
+    limit: 10,
+    ...searchParamsObj,
   });
-  return response.data;
+
+  return posts.data;
 };
 
 const PostList = () => {

@@ -4,6 +4,7 @@ import { format } from "timeago.js";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { CommentsAPI } from "../../api/req_modules/comments.js";
 
 const Comment = ({ postId, comment }) => {
   // console.log("Comment data:", comment);
@@ -14,15 +15,16 @@ const Comment = ({ postId, comment }) => {
 
   const mutation = useMutation({
     mutationFn: async () => {
-      const token = await getToken();
-      return axios.delete(
-        `${import.meta.env.VITE_API_URL}/comments/${comment._id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      // const token = await getToken();
+      // return axios.delete(
+      //   `${import.meta.env.VITE_API_URL}/comments/${comment._id}`,
+      //   {
+      //     headers: {
+      //       Authorization: `Bearer ${token}`,
+      //     },
+      //   }
+      // );
+      CommentsAPI.deleteCommentByCommentId(comment._id);
     },
     onSuccess: () => {
       console.log("Comment deleted successfully");

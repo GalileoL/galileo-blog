@@ -4,13 +4,15 @@ import { Comments, PostMenuActions, Search } from "../components";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "timeago.js";
+import { PostsAPI } from "../api/req_modules/posts";
 
 const fetchPostBySlug = async (slug) => {
-  const response = await axios.get(
-    `${import.meta.env.VITE_API_URL}/posts/${slug}`
-  );
+  // const response = await axios.get(
+  //   `${import.meta.env.VITE_API_URL}/posts/${slug}`
+  // );
+  const post = await PostsAPI.getPostBySlug(slug);
 
-  return response.data;
+  return post.data;
 };
 
 const SinglePostPage = () => {

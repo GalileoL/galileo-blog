@@ -4,15 +4,17 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 import { useAuth, useUser } from "@clerk/clerk-react";
 import { toast } from "react-toastify";
+import { CommentsAPI } from "../../api/req_modules/comments.js";
 
 const fetchCommentsByPostId = async (postId) => {
   // console.log("Fetching comments for postId:", postId);
-  const response = await axios.get(
-    `${import.meta.env.VITE_API_URL}/comments/${postId}`
-  );
+  // const response = await axios.get(
+  //   `${import.meta.env.VITE_API_URL}/comments/${postId}`
+  // );
+  const comments = await CommentsAPI.getCommentsByPostId(postId);
   // console.log("Fetched comments:", response.data);
 
-  return response.data;
+  return comments.data || []; // Ensure we return an array
 };
 
 const Comments = ({ postId }) => {
@@ -36,16 +38,17 @@ const Comments = ({ postId }) => {
   // create a comment
   const mutation = useMutation({
     mutationFn: async (newComment) => {
-      const token = await getToken();
-      return axios.post(
-        `${import.meta.env.VITE_API_URL}/comments/${postId}`,
-        newComment,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      // const token = await getToken();
+      // return axios.post(
+      //   `${import.meta.env.VITE_API_URL}/comments/${postId}`,
+      //   newComment,
+      //   {
+      //     headers: {
+      //       Authorization: `Bearer ${token}`,
+      //     },
+      //   }
+      // );
+      CommentsAPI.createCommentByPostId(postId, newComment);
     },
     onSuccess: (res) => {
       console.log("Comment created successfully:", res.data);

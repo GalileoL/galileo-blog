@@ -4,7 +4,8 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
-
+import { PostsAPI } from "../../api/req_modules/posts.js";
+import { UsersAPI } from "../../api/req_modules/users.js";
 const PostMenuActions = ({ post }) => {
   const { user } = useUser();
   const { getToken } = useAuth();
@@ -17,12 +18,13 @@ const PostMenuActions = ({ post }) => {
   } = useQuery({
     queryKey: ["savedPosts"],
     queryFn: async () => {
-      const token = await getToken();
-      return axios.get(`${import.meta.env.VITE_API_URL}/users/saved`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      // const token = await getToken();
+      // return axios.get(`${import.meta.env.VITE_API_URL}/users/saved`, {
+      //   headers: {
+      //     Authorization: `Bearer ${token}`,
+      //   },
+      // });
+      return UsersAPI.getSavedPosts();
     },
   });
 
@@ -36,12 +38,13 @@ const PostMenuActions = ({ post }) => {
 
   const deleteMutation = useMutation({
     mutationFn: async () => {
-      const token = await getToken();
-      return axios.delete(`${import.meta.env.VITE_API_URL}/posts/${post._id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      // const token = await getToken();
+      // return axios.delete(`${import.meta.env.VITE_API_URL}/posts/${post._id}`, {
+      //   headers: {
+      //     Authorization: `Bearer ${token}`,
+      //   },
+      // });
+      return PostsAPI.deletePostByPostId(post._id);
     },
     onSuccess: () => {
       toast.success("Post deleted successfully");
@@ -58,16 +61,17 @@ const PostMenuActions = ({ post }) => {
   // same as feature, use optimistic update
   const saveMutation = useMutation({
     mutationFn: async () => {
-      const token = await getToken();
-      return axios.patch(
-        `${import.meta.env.VITE_API_URL}/users/save`,
-        { postId: post._id },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      // const token = await getToken();
+      // return axios.patch(
+      //   `${import.meta.env.VITE_API_URL}/users/save`,
+      //   { postId: post._id },
+      //   {
+      //     headers: {
+      //       Authorization: `Bearer ${token}`,
+      //     },
+      //   }
+      // );
+      return UsersAPI.savePost(post._id);
     },
     onMutate: async () => {
       await queryClient.cancelQueries({ queryKey: ["savedPosts"] });
@@ -100,16 +104,17 @@ const PostMenuActions = ({ post }) => {
 
   const featureMutation = useMutation({
     mutationFn: async () => {
-      const token = await getToken();
-      return axios.patch(
-        `${import.meta.env.VITE_API_URL}/posts/feature`,
-        { postId: post._id },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      // const token = await getToken();
+      // return axios.patch(
+      //   `${import.meta.env.VITE_API_URL}/posts/feature`,
+      //   { postId: post._id },
+      //   {
+      //     headers: {
+      //       Authorization: `Bearer ${token}`,
+      //     },
+      //   }
+      // );
+      return PostsAPI.featurePost(post._id);
     },
     onMutate: async () => {
       await queryClient.cancelQueries({ queryKey: ["post", post.slug] });

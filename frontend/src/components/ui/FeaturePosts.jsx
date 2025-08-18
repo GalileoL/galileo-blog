@@ -5,12 +5,21 @@ import { useQuery } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { format } from "timeago.js";
 import FeaturePostsSkeleton from "../skeletons/FeaturePostsSkeleton";
-
+import { PostsAPI } from "../../api/req_modules/posts";
 const fetchFeaturedPosts = async () => {
-  const response = await axios.get(
-    `${import.meta.env.VITE_API_URL}/posts?featured=true&limit=4&sort=newest`
-  );
-  return response.data;
+  // const response = await axios.get(`${import.meta.env.VITE_API_URL}/posts`, {
+  //   params: {
+  //     featured: true,
+  //     limit: 4,
+  //     sort: "newest",
+  //   },
+  // });
+  const posts = await PostsAPI.getPosts({
+    featured: true,
+    limit: 4,
+    sort: "newest",
+  });
+  return posts.data || [];
 };
 
 const FeaturePosts = () => {

@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { IKUpload } from "../components";
 import DOMPurify from "dompurify";
+import { PostsAPI } from "../api/req_modules/posts.js";
 
 const ReactQuill = lazy(() => import("react-quill-new"));
 
@@ -41,12 +42,13 @@ const WritePage = () => {
   // we use react-query to handle the mutation
   const mutation = useMutation({
     mutationFn: async (newPost) => {
-      const token = await getToken();
-      return axios.post(`${import.meta.env.VITE_API_URL}/posts`, newPost, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      // const token = await getToken();
+      // return axios.post(`${import.meta.env.VITE_API_URL}/posts`, newPost, {
+      //   headers: {
+      //     Authorization: `Bearer ${token}`,
+      //   },
+      // });
+      return PostsAPI.createPost(newPost);
     },
     onSuccess: (res) => {
       console.log("success!", res.data);
