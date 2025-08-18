@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 import webpack from "webpack";
 import CssMinimizerPlugin from "css-minimizer-webpack-plugin";
 import { BundleAnalyzerPlugin } from "webpack-bundle-analyzer";
+import TerserPlugin from "terser-webpack-plugin";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -28,4 +29,22 @@ export default merge(baseConfig, {
     //   IMAGEKIT_PRIVATE_KEY: process.env.IMAGEKIT_PRIVATE_KEY,
     // }),
   ],
+  optimization: {
+    // console log removal and comment removal
+    minimize: true,
+    minimizer: [
+      new TerserPlugin({
+        extractComments: false,
+        terserOptions: {
+          compress: {
+            drop_console: true,
+            drop_debugger: true,
+          },
+          output: {
+            comments: false, // remove all comments
+          },
+        },
+      }),
+    ],
+  },
 });
