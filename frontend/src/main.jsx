@@ -1,14 +1,15 @@
 // index.jsx
-import { StrictMode, lazy, Suspense } from "react";
+import { StrictMode, lazy, Suspense, useEffect } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
 import App from "./App.jsx";
 
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { MainLayout } from "./layouts";
-import { ClerkProvider } from "@clerk/clerk-react";
+import { ClerkProvider, useAuth } from "@clerk/clerk-react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ToastContainer } from "react-toastify";
+import { setAuthTokenProvider } from "./auth/tokenProvider.js";
 
 // React Query configuration
 const queryClient = new QueryClient({
@@ -18,6 +19,7 @@ const queryClient = new QueryClient({
       retry: 1,
       refetchOnWindowFocus: false,
     },
+    mutations: { retry: 1 },
   },
 });
 
@@ -100,15 +102,29 @@ const router = createBrowserRouter([
   },
 ]);
 
+function WireClerkTokenProvider({ children }) {
+  const { getToken, isSignedIn } = useAuth();
+  useEffect(() => {
+    setAuthTokenProvider(async (opt = {}) => {
+      const t = await getToken({ skipCache: !!opt?.skipCache });
+      return t || null;
+    });
+  }, [getToken, isSignedIn]);
+
+  return children;
+}
+
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <ClerkProvider publishableKey={PUBLISHABLE_KEY}>
-      <QueryClientProvider client={queryClient}>
-        <App>
-          <RouterProvider router={router} />
-          <ToastContainer position="bottom-right" />
-        </App>
-      </QueryClientProvider>
+      <WireClerkTokenProvider>
+        <QueryClientProvider client={queryClient}>
+          <App>
+            <RouterProvider router={router} />
+            <ToastContainer position="bottom-right" />
+          </App>
+        </QueryClientProvider>
+      </WireClerkTokenProvider>
     </ClerkProvider>
   </StrictMode>
 );

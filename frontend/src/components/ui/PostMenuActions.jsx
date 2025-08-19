@@ -24,7 +24,7 @@ const PostMenuActions = ({ post }) => {
       //     Authorization: `Bearer ${token}`,
       //   },
       // });
-      return UsersAPI.getSavedPosts();
+      return UsersAPI.getUserSavedPosts();
     },
   });
 

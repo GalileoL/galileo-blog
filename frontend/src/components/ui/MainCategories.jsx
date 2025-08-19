@@ -2,6 +2,8 @@ import { Link } from "react-router-dom";
 import Search from "./Search";
 
 const MainCategories = () => {
+  console.log("it comes to MainCategories");
+
   return (
     <div className="hidden md:flex bg-white rounded-3xl xl:rounded-full p-4 shadow-lg items-center justify-between gap-8">
       {/* links */}

@@ -24,8 +24,9 @@ const fetchPosts = async (pageParam, searchParams) => {
     limit: 10,
     ...searchParamsObj,
   });
+  console.log("Fetched posts:", posts);
 
-  return posts.data;
+  return posts;
 };
 
 const PostList = () => {

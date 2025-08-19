@@ -17,6 +17,7 @@ const PostListItem = ({ post }) => {
             alt="post-image"
             className="rounded-2xl object-cover"
             width="735"
+            height="413"
             //   to best optimize the image, we set max width of the image to 735px (767px - 1rem*2) which is the biggest width of the container
           />
         </div>

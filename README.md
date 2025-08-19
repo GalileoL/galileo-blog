@@ -162,6 +162,12 @@ galileo-blog/
 - **TanStack Query** for queries & mutations
   - optimistic updates + rollback on error (feature/save)
   - invalidation on settle for eventual consistency
+- **Advanced HTTP Client** with custom axios wrapper (`/src/api/http.js`):
+  - **Request deduplication** with configurable policies (first/last wins)
+  - **Automatic retry logic** for network errors and 5xx responses (exponential backoff)
+  - **Token refresh handling** for 401 errors with seamless retry
+  - **Smart query parameter serialization** using qs library
+  - **FormData detection** with automatic content-type handling
 - **React Quill** lazy-loaded via `React.lazy` + `Suspense` to reduce first load
 - **ImageKit uploads** with progress/abort; recommended to enable LQIP + responsive `srcset`
 - **Smart ImageKit Tagging System**:
@@ -176,9 +182,7 @@ galileo-blog/
     - Bundle analyzer for production builds
     - DLL configuration for vendor library caching (optional)
     - Separate development and production configurations
-    - CSS minimization and code splitting
-
----
+    - CSS minimization and code splitting---
 
 ## Security & Hardening
 

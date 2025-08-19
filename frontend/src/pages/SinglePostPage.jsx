@@ -12,7 +12,7 @@ const fetchPostBySlug = async (slug) => {
   // );
   const post = await PostsAPI.getPostBySlug(slug);
 
-  return post.data;
+  return post;
 };
 
 const SinglePostPage = () => {

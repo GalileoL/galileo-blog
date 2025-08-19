@@ -6,6 +6,7 @@ import {
   upload,
 } from "@imagekit/react";
 import { useRef, useState } from "react";
+import { PostsAPI } from "../../api/req_modules/posts";
 
 // TBD: Implement the IKUpload component
 
@@ -24,16 +25,17 @@ const IKUpload = ({
   const authenticator = async () => {
     try {
       // Perform the request to the upload authentication endpoint.
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/posts/upload-auth`
-      );
-      if (!response.ok) {
-        // If the server response is not successful, extract the error text for debugging.
-        const errorText = await response.text();
-        throw new Error(
-          `Request failed with status ${response.status}: ${errorText}`
-        );
-      }
+      // const response = await fetch(
+      //   `${import.meta.env.VITE_API_URL}/posts/upload-auth`
+      // );
+      // if (!response.ok) {
+      //   // If the server response is not successful, extract the error text for debugging.
+      //   const errorText = await response.text();
+      //   throw new Error(
+      //     `Request failed with status ${response.status}: ${errorText}`
+      //   );
+      // }
+      const response = await PostsAPI.uploadAuth();
 
       console.log("Authentication request successful:", response);
 

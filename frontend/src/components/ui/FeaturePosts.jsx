@@ -14,19 +14,25 @@ const fetchFeaturedPosts = async () => {
   //     sort: "newest",
   //   },
   // });
+  console.log("Fetching featured posts...");
+
   const posts = await PostsAPI.getPosts({
     featured: true,
     limit: 4,
     sort: "newest",
   });
-  return posts.data || [];
+  console.log("Fetched featured posts:", posts);
+  return posts || [];
 };
 
 const FeaturePosts = () => {
+  console.log("it comes to FeaturePosts");
   const { isPending, error, data } = useQuery({
     queryKey: ["featuredPosts"],
     queryFn: () => fetchFeaturedPosts(),
   });
+  console.log("FeaturePosts data:", data);
+  console.log("FeaturePosts error:", error);
 
   if (isPending) return <FeaturePostsSkeleton />;
   if (error) return <div>Error: {error.message ?? "Unknown error"}</div>;

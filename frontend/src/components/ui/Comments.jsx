@@ -14,7 +14,7 @@ const fetchCommentsByPostId = async (postId) => {
   const comments = await CommentsAPI.getCommentsByPostId(postId);
   // console.log("Fetched comments:", response.data);
 
-  return comments.data || []; // Ensure we return an array
+  return comments || []; // Ensure we return an array
 };
 
 const Comments = ({ postId }) => {

@@ -2,6 +2,8 @@ import { Link } from "react-router-dom";
 import { FeaturePosts, MainCategories, PostList } from "../components";
 
 const Homepage = () => {
+  console.log("it comes to Homepage");
+
   return (
     <div className="mt-4 flex flex-col gap-4">
       {/* breadcrumb */}
