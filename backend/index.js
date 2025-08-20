@@ -4,6 +4,9 @@ import userRoute from "./routes/user.route.js";
 import postRoute from "./routes/post.route.js";
 import commentRoute from "./routes/comment.route.js";
 import webhookRoute from "./routes/webhook.route.js";
+import uploadRoute from "./routes/upload.route.js";
+import path from "node:path";
+import { sweepTmp, scheduleSweep } from "./lib/cleanup.js";
 import connectDB from "./lib/connectDB.js";
 import { clerkMiddleware } from "@clerk/express";
 import cors from "cors";
@@ -51,6 +54,8 @@ app.use("/api/webhooks", webhookRoute);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+app.use("/files", express.static(path.join(process.cwd(), "storage", "files")));
+
 // allow cross-origin requests
 // make it strict, only allow requests from the client URL
 // app.use(function (req, res, next) {
@@ -67,6 +72,9 @@ console.log("Hello World");
 
 app.listen(3000, () => {
   connectDB();
+
+  scheduleSweep();
+  sweepTmp();
   console.log("Server is running on port 3000 ");
 });
 
@@ -90,6 +98,7 @@ app.get("/protect", (req, res) => {
 app.use("/api/users", userRoute);
 app.use("/api/posts", postRoute);
 app.use("/api/comments", commentRoute);
+app.use("/api/upload", uploadRoute);
 
 // error handling
 app.use((err, req, res, next) => {

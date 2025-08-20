@@ -23,6 +23,7 @@ A full-stack blog platform built with **React + Vite**, **Node.js/Express**, **M
 - 💬 **Comments** per post
 - 🪝 **Clerk webhooks** (Svix signature verify, idempotent upsert)
 - 🛡️ XSS sanitization ready (DOMPurify), Helmet/CORS/rate limit friendly
+- 🚀 **Large file upload system**: Chunked, resumable uploads with web worker hashing, deduplication, quota enforcement, concurrency control, and automatic cleanup of incomplete uploads
 
 ---
 
@@ -31,6 +32,8 @@ A full-stack blog platform built with **React + Vite**, **Node.js/Express**, **M
 **Frontend:** React 19, Vite, React Router, TanStack Query, React Quill, Clerk React, Toastify, Tailwind utility classes, ImageKit  
 **Backend:** Node.js, Express, Mongoose, Clerk (server), Svix (webhook verify), ImageKit SDK  
 **DB:** MongoDB Atlas (Mongoose models & indexes)
+
+- **Robust upload API**: Supports chunked uploads, concurrency control, user quotas, deduplication, resumable sessions, and automatic cleanup
 
 ---
 
@@ -168,6 +171,7 @@ galileo-blog/
   - **Token refresh handling** for 401 errors with seamless retry
   - **Smart query parameter serialization** using qs library
   - **FormData detection** with automatic content-type handling
+- **Large File Uploads**: Web worker incremental SHA-256 hashing, chunked upload, resumable, deduplication, progress reporting, and quota enforcement
 - **React Quill** lazy-loaded via `React.lazy` + `Suspense` to reduce first load
 - **ImageKit uploads** with progress/abort; recommended to enable LQIP + responsive `srcset`
 - **Smart ImageKit Tagging System**:
@@ -182,7 +186,9 @@ galileo-blog/
     - Bundle analyzer for production builds
     - DLL configuration for vendor library caching (optional)
     - Separate development and production configurations
-    - CSS minimization and code splitting---
+    - CSS minimization and code splitting
+
+---
 
 ## Security & Hardening
 
