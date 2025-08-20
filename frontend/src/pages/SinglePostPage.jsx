@@ -5,6 +5,7 @@ import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "timeago.js";
 import { PostsAPI } from "../api/req_modules/posts";
+import DOMPurify from "dompurify";
 
 const fetchPostBySlug = async (slug) => {
   // const response = await axios.get(
@@ -22,6 +23,8 @@ const SinglePostPage = () => {
     queryKey: ["post", slug],
     queryFn: () => fetchPostBySlug(slug),
   });
+
+  const safeDataContent = DOMPurify.sanitize(data.content);
 
   if (isPending) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message ?? "Unknown error"}</div>;
@@ -60,7 +63,7 @@ const SinglePostPage = () => {
       <div className="flex flex-col md:flex-row gap-12">
         {/* text */}
         <div className="lg:text-lg flex flex-col gap-4">
-          <p>{data.content}</p>
+          <div dangerouslySetInnerHTML={{ __html: safeDataContent }} />
           <p>
             Lorem ipsum dolor sit, amet consectetur adipisicing elit. Asperiores
             repellat, aspernatur inventore similique facilis praesentium, odio
