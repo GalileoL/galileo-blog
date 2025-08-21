@@ -5,7 +5,7 @@ import {
   getStatus,
   uploadChunk,
   completeMerge,
-} from "../controllers/upload.controller";
+} from "../controllers/upload.controller.js";
 
 const router = express.Router();
 const parseJson = json({ limit: "1mb" });

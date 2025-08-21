@@ -1,5 +1,5 @@
-import { Semaphore } from "./semaphore";
-import { GLOBAL_MAX_CONCURRENCY, USER_MAX_CONCURRENCY } from "./config";
+import { Semaphore } from "./semaphore.js";
+import { GLOBAL_MAX_CONCURRENCY, USER_MAX_CONCURRENCY } from "./config.js";
 
 export const globalSemaphore = new Semaphore(GLOBAL_MAX_CONCURRENCY);
 const userSemaphores = new Map();
