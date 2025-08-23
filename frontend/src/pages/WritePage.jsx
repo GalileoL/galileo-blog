@@ -9,6 +9,8 @@ import { toast } from "react-toastify";
 import { IKUpload } from "../components";
 import DOMPurify from "dompurify";
 import { PostsAPI } from "../api/req_modules/posts.js";
+import WritePageSkeleton from "../components/skeletons/WritePageSkeleton.jsx";
+import ReactQuillSkeleton from "../components/skeletons/ReactQuillSkeleton.jsx";
 
 const ReactQuill = lazy(() => import("react-quill-new"));
 
@@ -58,7 +60,12 @@ const WritePage = () => {
   });
   // console.log(mutation);
 
-  if (!isLoaded) return <div>Loading...</div>;
+  if (!isLoaded)
+    return (
+      <div>
+        <WritePageSkeleton />
+      </div>
+    );
   if (isLoaded && !isSignedIn)
     return <div>You must be signed in to write a post</div>;
 
@@ -181,7 +188,13 @@ const WritePage = () => {
             </IKUpload>
           </div>
           {/* lazy load editor */}
-          <Suspense fallback={<div>Loading editor...</div>}>
+          <Suspense
+            fallback={
+              <div>
+                <ReactQuillSkeleton />
+              </div>
+            }
+          >
             <ReactQuill
               theme="snow"
               className="bg-white shadow-md rounded-xl p-2 flex-1"

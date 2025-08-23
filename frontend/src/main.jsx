@@ -45,7 +45,7 @@ const router = createBrowserRouter([
       {
         path: "/",
         element: (
-          <Suspense fallback={<div className="p-8">Loading…</div>}>
+          <Suspense fallback={<div className="p-8">Loading Main Layout…</div>}>
             <HomePage />
           </Suspense>
         ),
@@ -53,7 +53,9 @@ const router = createBrowserRouter([
       {
         path: "/posts",
         element: (
-          <Suspense fallback={<div className="p-8">Loading…</div>}>
+          <Suspense
+            fallback={<div className="p-8">Loading Post List Page…</div>}
+          >
             <PostListPage />
           </Suspense>
         ),
@@ -61,7 +63,9 @@ const router = createBrowserRouter([
       {
         path: "/posts/:slug",
         element: (
-          <Suspense fallback={<div className="p-8">Loading…</div>}>
+          <Suspense
+            fallback={<div className="p-8">Loading Single Post Page…</div>}
+          >
             <SinglePostPage />
           </Suspense>
         ),
@@ -69,7 +73,7 @@ const router = createBrowserRouter([
       {
         path: "/login",
         element: (
-          <Suspense fallback={<div className="p-8">Loading…</div>}>
+          <Suspense fallback={<div className="p-8">Loading Login Page…</div>}>
             <LoginPage />
           </Suspense>
         ),
@@ -77,7 +81,9 @@ const router = createBrowserRouter([
       {
         path: "/register",
         element: (
-          <Suspense fallback={<div className="p-8">Loading…</div>}>
+          <Suspense
+            fallback={<div className="p-8">Loading Register Page…</div>}
+          >
             <RegisterPage />
           </Suspense>
         ),
@@ -85,7 +91,7 @@ const router = createBrowserRouter([
       {
         path: "/write",
         element: (
-          <Suspense fallback={<div className="p-8">Loading editor…</div>}>
+          <Suspense fallback={<div className="p-8">Loading Write Page…</div>}>
             <WritePage />
           </Suspense>
         ),
@@ -93,7 +99,9 @@ const router = createBrowserRouter([
       {
         path: "*",
         element: (
-          <Suspense fallback={<div className="p-8">Loading…</div>}>
+          <Suspense
+            fallback={<div className="p-8">Loading Not Found Page…</div>}
+          >
             <NotFoundPage />
           </Suspense>
         ),

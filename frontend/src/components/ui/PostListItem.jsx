@@ -16,8 +16,8 @@ const PostListItem = ({ post }) => {
             src={post.img}
             alt="post-image"
             className="rounded-2xl object-cover"
-            width="735"
-            height="413"
+            width="400"
+            height="200"
             //   to best optimize the image, we set max width of the image to 735px (767px - 1rem*2) which is the biggest width of the container
           />
         </div>
@@ -42,7 +42,10 @@ const PostListItem = ({ post }) => {
           <span> {format(post.createdAt)} </span>
         </div>
         <p>{post.desc}</p>
-        <Link to="/posts/test" className="text-blue-800 underline text-sm">
+        <Link
+          to={`/posts/${post.slug}`}
+          className="text-blue-800 underline text-sm"
+        >
           Read more
         </Link>
       </div>

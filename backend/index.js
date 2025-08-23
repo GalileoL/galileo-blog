@@ -95,6 +95,11 @@ app.get("/protect", (req, res) => {
   });
 });
 
+app.use((req, res, next) => {
+  console.log("[HIT]", req.method, req.originalUrl);
+  next();
+});
+
 app.use("/api/users", userRoute);
 app.use("/api/posts", postRoute);
 app.use("/api/comments", commentRoute);

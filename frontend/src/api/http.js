@@ -98,7 +98,7 @@ http.interceptors.request.use(async (cfg) => {
   // Attach auth token
   // const { getToken } = useAuth();
   const token = await getAuthToken();
-  console.log("Auth token:", token);
+  // console.log("Auth token:", token);
 
   if (cfg._withAuth === true || (cfg._withAuth === "optional" && token)) {
     cfg.headers = cfg.headers || {};

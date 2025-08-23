@@ -10,6 +10,8 @@ const PostMenuActions = ({ post }) => {
   const { user } = useUser();
   const { getToken } = useAuth();
   const navigate = useNavigate();
+  const isLoggedIn = !!user;
+  // console.log("User is logged in:", isLoggedIn, "user is ", user);
 
   const {
     isPending,
@@ -24,17 +26,22 @@ const PostMenuActions = ({ post }) => {
       //     Authorization: `Bearer ${token}`,
       //   },
       // });
-      return UsersAPI.getUserSavedPosts();
-    },
-  });
+      const res = await UsersAPI.getUserSavedPosts();
+      console.log("Fetched saved posts:", res);
 
-  if (error) {
+      return res;
+    },
+    enabled: isLoggedIn,
+  });
+  console.log("savedPosts are ", savedPosts);
+
+  const isSaved = savedPosts?.includes(post._id) || false;
+  const isAdmin = user?.publicMetadata?.role === "admin" || false;
+
+  if (error && isLoggedIn) {
     console.error("Error fetching saved posts:", error);
     toast.error("Failed to fetch saved posts");
   }
-
-  const isSaved = savedPosts?.data?.some((p) => p === post._id) || false;
-  const isAdmin = user?.publicMetadata?.role === "admin" || false;
 
   const deleteMutation = useMutation({
     mutationFn: async () => {
@@ -77,27 +84,39 @@ const PostMenuActions = ({ post }) => {
       await queryClient.cancelQueries({ queryKey: ["savedPosts"] });
       const prev = queryClient.getQueryData(["savedPosts"]);
       queryClient.setQueryData(["savedPosts"], (old) => {
+        console.log(
+          "Optimistically updating saved posts:",
+          old,
+          "old.data:",
+          old?.data,
+          "prev:",
+          prev
+        );
+
         const ids = old?.data ?? [];
         const exists = ids.includes(post._id);
-        return {
-          data: exists
-            ? ids.filter((id) => id !== post._id)
-            : [...ids, post._id],
-        };
+        return exists
+          ? ids.filter((id) => id !== post._id)
+          : [...ids, post._id];
       });
       return { prev };
     },
     onSuccess: (res) => {
-      console.log("Post saved/unsaved successfully:", res.data);
+      console.log("Post saved/unsaved successfully:", res);
       // Invalidate the saved posts query to refetch the latest saved posts
-      queryClient.invalidateQueries({ queryKey: ["savedPosts"] });
+      // queryClient.invalidateQueries({ queryKey: ["savedPosts"] });
       toast.success(res.data);
     },
-    onError: (error) => {
+    onError: (error, variables, context) => {
+      // if unsuccessful, revert to previous state
+      if (context?.prev) {
+        queryClient.setQueryData(["savedPosts"], context.prev);
+      }
       console.error("Error saving post:", error);
       toast.error(error.response?.data || "Failed to save post");
     },
     onSettled: () => {
+      // let cache invalidation
       queryClient.invalidateQueries({ queryKey: ["savedPosts"] });
     },
   });
@@ -128,11 +147,14 @@ const PostMenuActions = ({ post }) => {
       return { prev };
     },
     onSuccess: (res) => {
-      console.log("Post featured successfully:", res.data);
+      console.log("Post featured successfully:", res);
       toast.success(res.data);
-      queryClient.invalidateQueries({ queryKey: ["post", post.slug] });
+      // queryClient.invalidateQueries({ queryKey: ["post", post.slug] });
     },
-    onError: (error) => {
+    onError: (error, variables, context) => {
+      if (context?.prev) {
+        queryClient.setQueryData(["post", post.slug], context.prev);
+      }
       console.error("Error featuring post:", error);
       toast.error(error.response?.data || "Failed to feature post");
     },
@@ -172,10 +194,12 @@ const PostMenuActions = ({ post }) => {
     <div className="flex flex-col gap-2">
       <h1 className="mt-8 mb-4 text-sm font-medium">Actions</h1>
 
-      {isPending ? (
+      {!isLoggedIn ? (
+        "Login to do more actions!"
+      ) : isPending ? (
         "Loading..."
       ) : error ? (
-        "saved post fetching failed!"
+        "Login to do more actions!"
       ) : (
         <button
           disabled={saveMutation.isPending}

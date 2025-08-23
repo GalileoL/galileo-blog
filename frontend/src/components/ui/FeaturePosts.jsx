@@ -46,14 +46,15 @@ const FeaturePosts = () => {
     <div className="mt-8 flex flex-col gap-8 lg:flex-row">
       {/* first */}
       {posts[0] && (
-        <div className="flex flex-col  gap-4 w-full lg:w-1/2">
+        <div className="flex flex-col  gap-4 w-full lg:w-1/2 ">
           {/* image */}
           {posts[0].img && (
             <IKImage
               src={posts[0].img}
               alt="feature post"
               className="rounded-3xl object-cover"
-              width="959"
+              height="400"
+              width="200"
               //   to best optimize the image, we set max width of the image to 959px (1023px - 2rem*2) which is the biggest width of the container
             />
           )}

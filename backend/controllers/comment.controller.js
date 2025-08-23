@@ -2,17 +2,20 @@ import Comment from "../models/comment.model.js";
 import User from "../models/user.model.js";
 
 export const getCommentsByPostId = async (req, res) => {
+  try {
+    const { postId } = req.params;
+    console.log("req.params is ", req.params);
+
+    const comments = await Comment.find({ post: postId })
+      .populate("user", "username img")
+      .sort({ createdAt: -1 });
+    console.log("Comments for postId:", postId, "Comments:", comments);
+    res.status(200).json(comments);
+  } catch (error) {
+    console.error("Error fetching comments:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
   //   console.log("Fetching comments for postId:", req.params.postId);
-
-  const { postId } = req.params;
-
-  const comments = await Comment.find({ post: postId })
-    .populate("user", "username img")
-    .sort({ createdAt: -1 });
-
-  //   console.log("Comments for postId:", postId, "Comments:", comments);
-
-  res.status(200).json(comments);
 };
 
 export const createCommentByPostId = async (req, res) => {

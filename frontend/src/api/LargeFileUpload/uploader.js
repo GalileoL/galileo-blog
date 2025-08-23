@@ -165,7 +165,7 @@ function hashInWorker(file, { chunkSize, signal }) {
         cleanup();
         resolve(e.data);
       }
-      // "If you need to display the hash progress, you can listen for type === 'hash-progress' here."
+      // "If need to display the hash progress, you can listen for type === 'hash-progress' here."
     };
     worker.onerror = (err) => {
       cleanup();

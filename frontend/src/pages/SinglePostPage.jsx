@@ -6,27 +6,41 @@ import { useQuery } from "@tanstack/react-query";
 import { format } from "timeago.js";
 import { PostsAPI } from "../api/req_modules/posts";
 import DOMPurify from "dompurify";
+import SinglePostPageSkeleton from "../components/skeletons/SinglePostPageSkeleton";
 
 const fetchPostBySlug = async (slug) => {
   // const response = await axios.get(
   //   `${import.meta.env.VITE_API_URL}/posts/${slug}`
   // );
   const post = await PostsAPI.getPostBySlug(slug);
+  // console.log("post is ", post);
+
+  if (!post) {
+    throw new Error("Post not found");
+  }
 
   return post;
 };
 
 const SinglePostPage = () => {
   const { slug } = useParams();
+  console.log("slug is ", slug);
 
   const { isPending, error, data } = useQuery({
     queryKey: ["post", slug],
     queryFn: () => fetchPostBySlug(slug),
   });
 
-  const safeDataContent = DOMPurify.sanitize(data.content);
+  // console.log("data is ", data);
 
-  if (isPending) return <div>Loading...</div>;
+  const safeDataContent = DOMPurify.sanitize(data?.content);
+
+  if (isPending)
+    return (
+      <div>
+        <SinglePostPageSkeleton />
+      </div>
+    );
   if (error) return <div>Error: {error.message ?? "Unknown error"}</div>;
   if (!data) return <div>No post found</div>;
 
@@ -40,9 +54,16 @@ const SinglePostPage = () => {
           </h1>
           <div className="flex items-center gap-2 text-gray-500 text-sm">
             <span>written by</span>
-            <Link className="text-blue-800">{data.user.username}</Link>
+            <Link
+              to={`/posts?author=${data.user.username}`}
+              className="text-blue-800"
+            >
+              {data.user.username}
+            </Link>
             <span>on</span>
-            <Link className="text-blue-800">{data.category}</Link>
+            <Link to={`/posts?cat=${data.category}`} className="text-blue-800">
+              {data.category}
+            </Link>
             <span>{format(data.createdAt)}</span>
           </div>
           <p className="text-gray-500 font-medium">{data.desc}</p>
